@@ -6,6 +6,7 @@ import {
   Dashboard,
   TicketDetails,
   PageNotFound,
+  Chat,
 } from "./screens";
 import RequireAuth from "./RequireAuth";
 import { Layout } from "./components";
@@ -38,6 +39,16 @@ function App() {
             <RequireAuth>
               <Layout>
                 <TicketDetails />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/Chat"
+          element={
+            <RequireAuth>
+              <Layout>
+                <Chat />
               </Layout>
             </RequireAuth>
           }

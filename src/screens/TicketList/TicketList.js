@@ -1,75 +1,70 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTable } from "react-table";
 import { useNavigate } from "react-router-dom";
+import ticketStore from "./../../app/ticketStore";
+import shallow from "zustand/shallow";
+import Loader from "./../../components/loader";
+import moment from "moment";
 
-const data = [
-  {
-    ticket_id: 1,
-    title: "Ticket title",
-    description: "Ticket description",
-    status: "Ticket status",
-    createdAt: "Ticket created at",
-    updatedAt: "Ticket updated at",
-  },
-  {
-    ticket_id: 2,
-    title: "Ticket title",
-    description: "Ticket description",
-    status: "Ticket status",
-    createdAt: "Ticket created at",
-    updatedAt: "Ticket updated at",
-  },
-  {
-    ticket_id: 3,
-    title: "Ticket title",
-    description: "Ticket description",
-    status: "Ticket status",
-    createdAt: "Ticket created at",
-    updatedAt: "Ticket updated at",
-  },
-  {
-    ticket_id: 4,
-    title: "Ticket title",
-    description: "Ticket description",
-    status: "Ticket status",
-    createdAt: "Ticket created at",
-    updatedAt: "Ticket updated at",
-  },
-];
-const columns = [
-  {
-    Header: "Ticket id",
-    accessor: "ticket_id",
-  },
-  {
-    Header: "Title",
-    accessor: "title",
-  },
-  {
-    Header: "Description",
-    accessor: "description",
-  },
-  {
-    Header: "Status ",
-    accessor: "status",
-  },
-  {
-    Header: "Created At",
-    accessor: "createdAt",
-  },
-  {
-    Header: "updated At",
-    accessor: "updatedAt",
-  },
-];
 function TicketList() {
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Ticket id",
+        accessor: "ticketId",
+      },
+      {
+        Header: "Title",
+        accessor: "title",
+      },
+      {
+        Header: "Description",
+        accessor: "description",
+      },
+      {
+        Header: "Status ",
+        accessor: "status",
+      },
+      {
+        Header: "Created At",
+        accessor: "createdOn",
+        accessor: (d) => {
+          return moment(d.createdOn).local().format("DD-MMM-YYYY");
+        },
+      },
+      {
+        Header: "updated At",
+        accessor: "updatedOn",
+        accessor: (d) => {
+          return moment(d.updatedOn).local().format("DD-MMM-YYYY");
+        },
+      },
+    ],
+    []
+  );
+  const fetchTickets = ticketStore((state) => state.fetchTickets);
+  const { loading, error, result } = ticketStore((state) => state, shallow);
+  console.log("result====>", result);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+    useTable({ columns, data: result?.list || [] });
   let navigate = useNavigate();
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
+
+  // if (loading) {
+  //   return <Loader />;
+  // }
 
   return (
     <div className="w-full">
+      {loading && (
+        <div className="w-full h-screen flex justify-center items-center absolute">
+          <Loader />
+        </div>
+      )}
       <h1 className="text-center mt-5 text-lg	font-bold	 ">Ticket List</h1>
       <div className="mt-10 overflow-x-scroll overflow-y-hidden w-full">
         <table
@@ -109,9 +104,9 @@ function TicketList() {
                   // Apply the row props
                   <tr
                     {...row.getRowProps()}
-                    className="w-full h-11 border-2 text-center"
+                    className="w-full h-11 border-2 text-center cursor-pointer"
                     onClick={() => {
-                      navigate(`../ticketDetails/${row.original.ticket_id}`);
+                      navigate(`../ticketDetails/${row.original._id}`);
                     }}
                   >
                     {
