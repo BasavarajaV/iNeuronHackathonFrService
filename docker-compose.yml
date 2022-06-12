@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  query-support-ui:
+    image: query-support-ui:latest
+    working_dir: /usr/src/query-support-ui
+    container_name: query-support-ui
+    ports:
+      - 3000:3000
+    volumes:
+      - /var/log/query-supportui:/logs
+      - /home/ubuntu/build/query-support-ui/build:/usr/src/query-support-ui/build
+    env_file:
+      - query-support-ui.env
